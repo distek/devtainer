@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# pushd ~/ || exit 1
-
-# tar cvf nvim-local.tar .local/share/nvim
-
-# popd || exit 2
-
-# mv ~/nvim-local.tar .
-
 hostIP() {
 	nslookup "$1" | grep "^Name:" -A1 | grep "^Address" | sed 's/Address:\s//g'
 }
