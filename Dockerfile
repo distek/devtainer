@@ -1,7 +1,38 @@
 FROM archlinux:latest
 
 # To prevent abusing the arch servers
-RUN --mount=type=cache,target=/var/cache/pacman/pkg pacman --noconfirm -Sy base base-devel ripgrep fd go nodejs pyenv npm tmux git zsh fzf lsd bat reflector rsync unzip bc gcc glibc docker ninja meson cmake coreutils bind tree-sitter-cli
+RUN --mount=type=cache,target=/var/cache/pacman/pkg pacman --noconfirm -Sy \
+    base \
+    base-devel \
+    bat \
+    bc \
+    bind \
+    cmake \
+    coreutils \
+    docker \
+    fd \
+    fzf \
+    gcc \
+    git \
+    glibc \
+    go \
+    linux-api-headers \
+    linux-docs \
+    linux-headers \
+    lsd \
+    meson \
+    ninja \
+    nodejs \
+    npm \
+    openssh \
+    pyenv \
+    reflector \
+    ripgrep \
+    rsync \
+    tmux \
+    tree-sitter-cli \
+    unzip \
+    zsh
 
 # Get us some neovim
 RUN git clone https://github.com/neovim/neovim /tmp/neovim-git
@@ -18,15 +49,18 @@ RUN pyenv install 3.11.4
 RUN pyenv global 3.11.4
 # JUST DO IT IN THE CONTAINER AND COMMIT THE IMAGE JESUS FUCKING CHRIST
 
-RUN useradd -ms /bin/zsh user
-RUN usermod -aG wheel,docker user
+ARG DEV_USER=user
+ENV DEV_USER=${DEV_USER}
+
+RUN useradd -ms /bin/zsh $DEV_USER
+RUN usermod -aG wheel,docker $DEV_USER
 RUN echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-USER user
+USER $DEV_USER
 
-WORKDIR /home/user
+WORKDIR /home/$DEV_USER
 
-RUN CASHBUST=5 git clone https://github.com/distek/config.nvim.git ~/.config/nvim
+RUN git clone https://github.com/distek/config.nvim.git ~/.config/nvim
 RUN git clone https://github.com/distek/config.tmux.git ~/.config/tmux
 RUN git clone https://github.com/distek/config.shell.git ~/.config/shell
 RUN touch ~/.config/shell/tokens
@@ -46,8 +80,5 @@ ENV SHELL=/bin/zsh
 
 # Install plugins
 RUN DEVTAINER_BUILD=1 nvim -V4 --headless +"Lazy! restore | sleep 100" +qa
-
-# Give mason a chance
-RUN DEVTAINER_BUILD=1 nvim -V4 --headless +"sleep 100" +qa
 
 ENTRYPOINT ["/bin/zsh"]

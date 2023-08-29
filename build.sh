@@ -10,5 +10,6 @@ PROGRESS_NO_TRUNC=1 docker build \
 	--add-host gitlab.com:"$(hostIP gitlab.com)" \
 	--add-host gitlab.com:"$(hostIP gitlab.com)" \
 	--add-host git.sr.ht:"$(hostIP git.sr.ht)" \
+	--build-arg DEV_USER="$USER" \
 	"$@" \
 	.
